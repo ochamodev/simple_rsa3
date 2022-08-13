@@ -1,6 +1,6 @@
 name: simple_rsa3
-description: A new Flutter plugin project.
-version: 2.0.0
+description: A plugin for RSA encryption.
+version: 2.0.1
 homepage: https://github.com/ochamodev/simple_rsa3
 
 environment:
