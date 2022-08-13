@@ -1,4 +1,6 @@
-## 2.0.0
+## 2.0.1
+Fix description
+## 2.0.1
 Migration to flutter 2.5
 Migration of repo to keep this library alive
 
