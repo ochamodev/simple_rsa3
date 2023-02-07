@@ -1,4 +1,5 @@
 import Flutter
+import SwiftyRSA
 import UIKit
 
 public class SwiftSimpleRsa3Plugin: NSObject, FlutterPlugin {
