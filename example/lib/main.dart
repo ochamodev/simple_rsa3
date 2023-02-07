@@ -109,8 +109,7 @@ class _MyAppState extends State<MyApp> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  RaisedButton(
-                    color: Colors.yellow,
+                  ElevatedButton(
                     onPressed: () async {
                       String tmp = "";
                       try {
