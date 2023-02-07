@@ -1,6 +1,10 @@
+## 2.0.2
+Add a longer project description.
+Fix a bug on the ios side that didn't let to build the project.
+Fix sample app.
+
 ## 2.0.1
 Fix description
-## 2.0.1
 Migration to flutter 2.5
 Migration of repo to keep this library alive
 
