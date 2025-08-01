@@ -118,7 +118,6 @@ class SimpleRsa3Plugin: FlutterPlugin, MethodCallHandler {
   }
 
   private fun encryptData(txt: String, publicKey: String): String {
-    val encoded: String
     try {
       val publicBytes = Base64.decode(publicKey, Base64.DEFAULT)
       val keySpec = X509EncodedKeySpec(publicBytes)
@@ -128,30 +127,23 @@ class SimpleRsa3Plugin: FlutterPlugin, MethodCallHandler {
       cipher.init(Cipher.ENCRYPT_MODE, pubKey)
 
       val bytes = txt.toByteArray()
-      val blockSize = cipher.blockSize
-      val outBlockSize = cipher.getOutputSize(bytes.size)
+      val blockSize = 245 // RSA/ECB/PKCS1PADDING max block size for 2048-bit key
       val blocks: Int = Math.ceil(bytes.size / blockSize.toDouble()).toInt()
-      var output = ByteArray(blocks * outBlockSize)
-      var outputSize = 0
+      var output = ByteArray(0)
 
       for (i in 0 until blocks) {
         val offset = i * blockSize
         val blockLength = Math.min(blockSize, bytes.size - offset)
         val cryptoBlock = cipher.doFinal(bytes, offset, blockLength)
-        System.arraycopy(cryptoBlock, 0, output, outputSize, cryptoBlock.size)
-        outputSize += cryptoBlock.size
+        output += cryptoBlock
       }
 
-      if (outputSize != output.size) {
-        val tmp = output.copyOfRange(0, outputSize)
-        output = tmp
-      }
-
-      encoded = Base64.encodeToString(output, Base64.DEFAULT)
+      val encoded = Base64.encodeToString(output, Base64.DEFAULT)
       return encoded
 
     } catch (e: Exception) {
-      throw Exception(e.toString())
+      Log.e("SimpleRsa3Plugin", "Encryption error: ${e.message}")
+      throw Exception("Encryption failed: ${e.message}")
     }
   }
 
@@ -182,22 +174,15 @@ class SimpleRsa3Plugin: FlutterPlugin, MethodCallHandler {
     val cipher1 = Cipher.getInstance("RSA/ECB/PKCS1PADDING")
     cipher1.init(Cipher.DECRYPT_MODE, pubKey)
 
-    val blockSize = cipher1.blockSize
+    val blockSize = 256 // RSA 2048-bit key encrypted block size
     val blocks : Int = Math.ceil(encryptedBytes.size / blockSize.toDouble()).toInt()
-    var output = ByteArray(blocks * blockSize)
-    var outputSize = 0
+    var output = ByteArray(0)
 
     for (i in 0 until blocks) {
       val offset = i * blockSize
       val blockLength = Math.min(blockSize, encryptedBytes.size - offset)
       val cryptoBlock = cipher1.doFinal(encryptedBytes, offset, blockLength)
-      System.arraycopy(cryptoBlock, 0, output, outputSize, cryptoBlock.size)
-      outputSize += cryptoBlock.size
-    }
-
-    if (outputSize != output.size) {
-      val tmp = output.copyOfRange(0, outputSize)
-      output = tmp
+      output += cryptoBlock
     }
     return String(output)
   }
@@ -205,7 +190,7 @@ class SimpleRsa3Plugin: FlutterPlugin, MethodCallHandler {
   @Throws(NoSuchAlgorithmException::class, NoSuchPaddingException::class, InvalidKeyException::class, IllegalBlockSizeException::class, BadPaddingException::class)
   private fun signData(plainText: String, privateKey: String): String {
     try {
-      val privateSignature = Signature.getInstance("SHA1withRSA")
+      val privateSignature = Signature.getInstance("SHA256withRSA")
       privateSignature.initSign(loadPrivateKey(privateKey))
       privateSignature.update(plainText.toByteArray())
       val signature = privateSignature.sign()
@@ -222,7 +207,7 @@ class SimpleRsa3Plugin: FlutterPlugin, MethodCallHandler {
       val keyFactory = KeyFactory.getInstance("RSA")
       val pubKey = keyFactory.generatePublic(keySpec)
 
-      val publicSignature = Signature.getInstance("SHA1withRSA")
+      val publicSignature = Signature.getInstance("SHA256withRSA")
       publicSignature.initVerify(pubKey)
       publicSignature.update(plainText.toByteArray())
       val signatureBytes = Base64.decode(signature, Base64.DEFAULT)
