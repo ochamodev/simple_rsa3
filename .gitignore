@@ -28,3 +28,7 @@ migrate_working_dir/
 .dart_tool/
 .packages
 build/
+
+android/gradle
+android/gradlew
+android/gradlew.bat

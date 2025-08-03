@@ -1,3 +1,7 @@
+## 2.0.3
+Migrate to recent versions of gradle plugins.
+Fix build issues with newer versions of gradle.
+
 ## 2.0.2
 Add a longer project description.
 Fix a bug on the ios side that didn't let to build the project.
